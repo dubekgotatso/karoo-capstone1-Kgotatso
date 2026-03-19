@@ -1,0 +1,14 @@
+Regional Performance vs Target
+Region,Actual Revenue,Target Amount,% of Target
+Eastern Cape,21200.00,20000.00,106.00
+Northern Cape,29900.00,30000.00,99.67
+Western Cape,56500.00,50000.00,113.00
+
+Top 3 Suppliers per Region
+Region,Farm Name,Total Revenue,Rank
+Eastern Cape,Blue Crane Citrus,12000.00,1
+Eastern Cape,Grootfontein Wool,9200.00,2
+Northern Cape,Desert Rose Orchards,17200.00,1
+Northern Cape,Karoo Lamb Estate,12700.00,2
+Western Cape,Mountain View Vineyards,36000.00,1
+Western Cape,Valley Olive Farm,20500.00,2
