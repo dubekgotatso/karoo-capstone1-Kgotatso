@@ -1,6 +1,7 @@
 import psycopg2
 import pandas as pd
 from psycopg2.extras import execute_values
+import os
 
 # Replace with your actual PostgreSQL password
 DB_CONFIG = {
@@ -34,6 +35,25 @@ def run_sql(query):
     cur.close()
     conn.close()
 
+def get_file_path(filename, alt_filename=None):
+    desktop_folder = '/Users/tshmacm1176/Desktop/CSV FILES'
+    
+    paths_to_check = [
+        filename,
+        os.path.join(desktop_folder, filename)
+    ]
+    if alt_filename:
+        paths_to_check.extend([
+            alt_filename,
+            os.path.join(desktop_folder, alt_filename)
+        ])
+        
+    for path in paths_to_check:
+        if os.path.exists(path):
+            return path
+            
+    raise FileNotFoundError(f"Could not find '{filename}' locally or in '{desktop_folder}'")
+
 def load_data():
     try:
         # 0. Ensure database exists
@@ -51,7 +71,9 @@ def load_data():
         cur = conn.cursor()
 
         # 2. Load Suppliers
-        suppliers_df = pd.read_csv('suppliers.csv')
+        suppliers_path = get_file_path('suppliers.csv')
+        print(f"Loading suppliers from: {suppliers_path}")
+        suppliers_df = pd.read_csv(suppliers_path)
         suppliers_vals = [tuple(x) for x in suppliers_df.to_numpy()]
         execute_values(cur, 
             "INSERT INTO Suppliers (supplier_id, farm_name, region) VALUES %s ON CONFLICT (supplier_id) DO NOTHING", 
@@ -59,7 +81,9 @@ def load_data():
         )
 
         # 3. Load Orders
-        orders_df = pd.read_csv('orderss.csv')
+        orders_path = get_file_path('orderss.csv', alt_filename='orders.csv')
+        print(f"Loading orders from: {orders_path}")
+        orders_df = pd.read_csv(orders_path)
         orders_vals = [tuple(x) for x in orders_df.to_numpy()]
         execute_values(cur, 
             "INSERT INTO Orders (order_id, supplier_id, order_date, total_price) VALUES %s ON CONFLICT (order_id) DO NOTHING", 
@@ -67,7 +91,9 @@ def load_data():
         )
 
         # 4. Load Targets
-        targets_df = pd.read_csv('targets.csv')
+        targets_path = get_file_path('targets.csv')
+        print(f"Loading targets from: {targets_path}")
+        targets_df = pd.read_csv(targets_path)
         targets_vals = [tuple(x) for x in targets_df.to_numpy()]
         execute_values(cur, 
             "INSERT INTO Sales_Targets (region, quarter, target_amount) VALUES %s ON CONFLICT (region, quarter) DO NOTHING", 
